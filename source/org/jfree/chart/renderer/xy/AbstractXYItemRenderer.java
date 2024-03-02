@@ -1676,7 +1676,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			Supplier<RectangleEdge> arg0, PlotOrientation arg1, PlotOrientation arg2, Interface3 arg3,
 			Interface4 arg4) {
 		if (marker instanceof ValueMarker) {
-			Line2D line = line1(marker, domainAxis, plot, dataArea, arg0, arg1, arg2);
+			Line2D line = domainAxis.line1(marker, plot, dataArea, arg0, arg1, arg2);
 			ValueMarker vm = (ValueMarker) marker;
 			double value = vm.getValue();
 			Range range = domainAxis.getRange();
@@ -1727,7 +1727,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
 			if (p instanceof GradientPaint) {
-				GradientPaint gp = makePaint(im, rect, p);
+				GradientPaint gp = im.makePaint(rect, p);
 				g2.setPaint(gp);
 			} else {
 				g2.setPaint(p);
@@ -1771,59 +1771,17 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		return;
 	}
 
-	private Line2D line1(Marker marker, ValueAxis domainAxis, XYPlot plot, Rectangle2D dataArea,
-			Supplier<RectangleEdge> arg0, PlotOrientation arg1, PlotOrientation arg2) {
-		ValueMarker vm = (ValueMarker) marker;
-		double value = vm.getValue();
-		double v = domainAxis.valueToJava2D(value, dataArea, arg0.get());
-		PlotOrientation orientation = plot.getOrientation();
-		Line2D line = null;
-		if (orientation == arg1) {
-			line = new Line2D.Double(dataArea.getMinX(), v, dataArea.getMaxX(), v);
-		} else if (orientation == arg2) {
-			line = new Line2D.Double(v, dataArea.getMinY(), v, dataArea.getMaxY());
-		}
-		return line;
-	}
-
 	private Line2D makeLine(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
-		return lineExtracted(start, range, end, dataArea.getMinY(), dataArea.getMaxY(), (Double y0) -> start2d,
+		return range.lineExtracted(start, end, dataArea.getMinY(), dataArea.getMaxY(), (Double y0) -> start2d,
 				(Double y0) -> y0, (Double y1) -> start2d, (Double y1) -> y1, (Double y0) -> end2d, (Double y0) -> y0,
 				(Double y1) -> end2d, (Double y1) -> y1);
 	}
 
 
-	private GradientPaint makePaint(IntervalMarker im, Rectangle2D rect, Paint p) {
-		GradientPaint gp = (GradientPaint) p;
-		GradientPaintTransformer t = im.getGradientPaintTransformer();
-		if (t != null) {
-			gp = t.transform(gp, rect);
-		}
-		return gp;
-	}
-
 	private Line2D line(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
-		return lineExtracted(start, range, end, dataArea.getMinX(), dataArea.getMaxX(), (Double x0) -> x0,
+		return range.lineExtracted(start, end, dataArea.getMinX(), dataArea.getMaxX(), (Double x0) -> x0,
 				(Double x0) -> start2d, (Double x1) -> x1, (Double x1) -> start2d, (Double x0) -> x0,
 				(Double x0) -> end2d, (Double x1) -> x1, (Double x1) -> end2d);
-	}
-
-	private Line2D lineExtracted(double start, Range range, double end, double arg0, double arg1,
-			Function<Double, Double> arg2, Function<Double, Double> arg3, Function<Double, Double> arg4,
-			Function<Double, Double> arg5, Function<Double, Double> arg6, Function<Double, Double> arg7,
-			Function<Double, Double> arg8, Function<Double, Double> arg9) {
-		double x1 = arg1;
-		double x0 = arg0;
-		Line2D line = new Line2D.Double();
-		if (range.contains(start)) {
-			line.setLine((double) arg2.apply(x0), (double) arg3.apply(x0), (double) arg4.apply(x1),
-					(double) arg5.apply(x1));
-		}
-		if (range.contains(end)) {
-			line.setLine((double) arg6.apply(x0), (double) arg7.apply(x0), (double) arg8.apply(x1),
-					(double) arg9.apply(x1));
-		}
-		return line;
 	}
 
 

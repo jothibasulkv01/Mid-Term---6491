@@ -63,7 +63,9 @@
 
 package org.jfree.data;
 
+import java.awt.geom.Line2D;
 import java.io.Serializable;
+import java.util.function.Function;
 import org.jfree.chart.util.ParamChecks;
 
 /**
@@ -474,5 +476,23 @@ public strictfp class Range implements Serializable {
     public String toString() {
         return ("Range[" + this.lower + "," + this.upper + "]");
     }
+
+	public Line2D lineExtracted(double start, double end, double arg0, double arg1, Function<Double, Double> arg2,
+			Function<Double, Double> arg3, Function<Double, Double> arg4, Function<Double, Double> arg5,
+			Function<Double, Double> arg6, Function<Double, Double> arg7, Function<Double, Double> arg8,
+			Function<Double, Double> arg9) {
+		double x1 = arg1;
+		double x0 = arg0;
+		Line2D line = new Line2D.Double();
+		if (contains(start)) {
+			line.setLine((double) arg2.apply(x0), (double) arg3.apply(x0), (double) arg4.apply(x1),
+					(double) arg5.apply(x1));
+		}
+		if (contains(end)) {
+			line.setLine((double) arg6.apply(x0), (double) arg7.apply(x0), (double) arg8.apply(x1),
+					(double) arg9.apply(x1));
+		}
+		return line;
+	}
 
 }
