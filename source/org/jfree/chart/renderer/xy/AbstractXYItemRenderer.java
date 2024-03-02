@@ -1740,17 +1740,13 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.fill(rect);
 			if (im.getOutlinePaint() != null && im.getOutlineStroke() != null) {
 				if (orientation == arg2) {
-					Line2D line = new Line2D.Double();
-					double y0 = dataArea.getMinY();
-					double y1 = dataArea.getMaxY();
+					Line2D line = makeLine(dataArea, start, end, range, start2d, end2d);
 					g2.setPaint(im.getOutlinePaint());
 					g2.setStroke(im.getOutlineStroke());
 					if (range.contains(start)) {
-						line.setLine(start2d, y0, start2d, y1);
 						g2.draw(line);
 					}
 					if (range.contains(end)) {
-						line.setLine(end2d, y0, end2d, y1);
 						g2.draw(line);
 					}
 				} else if (orientation == arg1) {
@@ -1778,6 +1774,19 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.setComposite(originalComposite);
 		}
 		return;
+	}
+
+	private Line2D makeLine(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
+		Line2D line = new Line2D.Double();
+		double y0 = dataArea.getMinY();
+		double y1 = dataArea.getMaxY();
+		if (range.contains(start)) {
+			line.setLine(start2d, y0, start2d, y1);
+		}
+		if (range.contains(end)) {
+			line.setLine(end2d, y0, end2d, y1);
+		}
+		return line;
 	}
 
 
