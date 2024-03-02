@@ -1780,6 +1780,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		return;
 	}
 
+
 	private GradientPaint makePaint(IntervalMarker im, Rectangle2D rect, Paint p) {
 		GradientPaint gp = (GradientPaint) p;
 		GradientPaintTransformer t = im.getGradientPaintTransformer();
