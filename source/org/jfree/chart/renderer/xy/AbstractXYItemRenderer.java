@@ -148,6 +148,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
@@ -1777,16 +1778,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 	}
 
 	private Line2D makeLine(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
-		Line2D line = new Line2D.Double();
-		double y0 = dataArea.getMinY();
-		double y1 = dataArea.getMaxY();
-		if (range.contains(start)) {
-			line.setLine(start2d, y0, start2d, y1);
-		}
-		if (range.contains(end)) {
-			line.setLine(end2d, y0, end2d, y1);
-		}
-		return line;
+		return lineExtracted(start, range, end, dataArea.getMinY(), dataArea.getMaxY(), (Double y0) -> start2d,
+				(Double y0) -> y0, (Double y1) -> start2d, (Double y1) -> y1, (Double y0) -> end2d, (Double y0) -> y0,
+				(Double y1) -> end2d, (Double y1) -> y1);
 	}
 
 
@@ -1800,14 +1794,25 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 	}
 
 	private Line2D line(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
+		return lineExtracted(start, range, end, dataArea.getMinX(), dataArea.getMaxX(), (Double x0) -> x0,
+				(Double x0) -> start2d, (Double x1) -> x1, (Double x1) -> start2d, (Double x0) -> x0,
+				(Double x0) -> end2d, (Double x1) -> x1, (Double x1) -> end2d);
+	}
+
+	private Line2D lineExtracted(double start, Range range, double end, double arg0, double arg1,
+			Function<Double, Double> arg2, Function<Double, Double> arg3, Function<Double, Double> arg4,
+			Function<Double, Double> arg5, Function<Double, Double> arg6, Function<Double, Double> arg7,
+			Function<Double, Double> arg8, Function<Double, Double> arg9) {
+		double x1 = arg1;
+		double x0 = arg0;
 		Line2D line = new Line2D.Double();
-		double x0 = dataArea.getMinX();
-		double x1 = dataArea.getMaxX();
 		if (range.contains(start)) {
-			line.setLine(x0, start2d, x1, start2d);
+			line.setLine((double) arg2.apply(x0), (double) arg3.apply(x0), (double) arg4.apply(x1),
+					(double) arg5.apply(x1));
 		}
 		if (range.contains(end)) {
-			line.setLine(x0, end2d, x1, end2d);
+			line.setLine((double) arg6.apply(x0), (double) arg7.apply(x0), (double) arg8.apply(x1),
+					(double) arg9.apply(x1));
 		}
 		return line;
 	}
