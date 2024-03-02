@@ -1732,11 +1732,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
 			if (p instanceof GradientPaint) {
-				GradientPaint gp = (GradientPaint) p;
-				GradientPaintTransformer t = im.getGradientPaintTransformer();
-				if (t != null) {
-					gp = t.transform(gp, rect);
-				}
+				GradientPaint gp = makePaint(im, rect, p);
 				g2.setPaint(gp);
 			} else {
 				g2.setPaint(p);
@@ -1782,6 +1778,16 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.setComposite(originalComposite);
 		}
 		return;
+	}
+
+
+	private GradientPaint makePaint(IntervalMarker im, Rectangle2D rect, Paint p) {
+		GradientPaint gp = (GradientPaint) p;
+		GradientPaintTransformer t = im.getGradientPaintTransformer();
+		if (t != null) {
+			gp = t.transform(gp, rect);
+		}
+		return gp;
 	}
 
 	private Line2D line(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
