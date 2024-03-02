@@ -1676,20 +1676,14 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			Supplier<RectangleEdge> arg0, PlotOrientation arg1, PlotOrientation arg2, Interface3 arg3,
 			Interface4 arg4) {
 		if (marker instanceof ValueMarker) {
+			Line2D line = line1(marker, domainAxis, plot, dataArea, arg0, arg1, arg2);
 			ValueMarker vm = (ValueMarker) marker;
 			double value = vm.getValue();
 			Range range = domainAxis.getRange();
 			if (!range.contains(value)) {
 				return;
 			}
-			double v = domainAxis.valueToJava2D(value, dataArea, arg0.get());
 			PlotOrientation orientation = plot.getOrientation();
-			Line2D line = null;
-			if (orientation == arg1) {
-				line = new Line2D.Double(dataArea.getMinX(), v, dataArea.getMaxX(), v);
-			} else if (orientation == arg2) {
-				line = new Line2D.Double(v, dataArea.getMinY(), v, dataArea.getMaxY());
-			}
 			final Composite originalComposite = g2.getComposite();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, marker.getAlpha()));
 			g2.setPaint(marker.getPaint());
@@ -1775,6 +1769,21 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			g2.setComposite(originalComposite);
 		}
 		return;
+	}
+
+	private Line2D line1(Marker marker, ValueAxis domainAxis, XYPlot plot, Rectangle2D dataArea,
+			Supplier<RectangleEdge> arg0, PlotOrientation arg1, PlotOrientation arg2) {
+		ValueMarker vm = (ValueMarker) marker;
+		double value = vm.getValue();
+		double v = domainAxis.valueToJava2D(value, dataArea, arg0.get());
+		PlotOrientation orientation = plot.getOrientation();
+		Line2D line = null;
+		if (orientation == arg1) {
+			line = new Line2D.Double(dataArea.getMinX(), v, dataArea.getMaxX(), v);
+		} else if (orientation == arg2) {
+			line = new Line2D.Double(v, dataArea.getMinY(), v, dataArea.getMaxY());
+		}
+		return line;
 	}
 
 	private Line2D makeLine(Rectangle2D dataArea, double start, double end, Range range, double start2d, double end2d) {
