@@ -155,7 +155,9 @@ import org.jfree.util.PublicCloneable;
 public abstract class ValueAxis extends Axis
         implements Cloneable, PublicCloneable, Serializable {
 
-    /** For serialization. */
+    private ValueAxisProduct valueAxisProduct = new ValueAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 3698345477322391456L;
 
     /** The default axis range. */
@@ -197,18 +199,6 @@ public abstract class ValueAxis extends Axis
 
     /** The maximum tick count. */
     public static final int MAXIMUM_TICK_COUNT = 500;
-
-    /**
-     * A flag that controls whether an arrow is drawn at the positive end of
-     * the axis line.
-     */
-    private boolean positiveArrowVisible;
-
-    /**
-     * A flag that controls whether an arrow is drawn at the negative end of
-     * the axis line.
-     */
-    private boolean negativeArrowVisible;
 
     /** The shape used for an up arrow. */
     private transient Shape upArrow;
@@ -299,8 +289,8 @@ public abstract class ValueAxis extends Axis
 
         super(label);
 
-        this.positiveArrowVisible = false;
-        this.negativeArrowVisible = false;
+        valueAxisProduct.setPositiveArrowVisible2(false);
+        valueAxisProduct.setNegativeArrowVisible2(false);
 
         this.range = DEFAULT_RANGE;
         this.autoRange = DEFAULT_AUTO_RANGE;
@@ -388,7 +378,7 @@ public abstract class ValueAxis extends Axis
      * @see #setPositiveArrowVisible(boolean)
      */
     public boolean isPositiveArrowVisible() {
-        return this.positiveArrowVisible;
+        return this.valueAxisProduct.getPositiveArrowVisible();
     }
 
     /**
@@ -401,8 +391,7 @@ public abstract class ValueAxis extends Axis
      * @see #isPositiveArrowVisible()
      */
     public void setPositiveArrowVisible(boolean visible) {
-        this.positiveArrowVisible = visible;
-        fireChangeEvent();
+        valueAxisProduct.setPositiveArrowVisible(visible, this);
     }
 
     /**
@@ -414,7 +403,7 @@ public abstract class ValueAxis extends Axis
      * @see #setNegativeArrowVisible(boolean)
      */
     public boolean isNegativeArrowVisible() {
-        return this.negativeArrowVisible;
+        return this.valueAxisProduct.getNegativeArrowVisible();
     }
 
     /**
@@ -427,8 +416,7 @@ public abstract class ValueAxis extends Axis
      * @see #setNegativeArrowVisible(boolean)
      */
     public void setNegativeArrowVisible(boolean visible) {
-        this.negativeArrowVisible = visible;
-        fireChangeEvent();
+        valueAxisProduct.setNegativeArrowVisible(visible, this);
     }
 
     /**
@@ -575,7 +563,7 @@ public abstract class ValueAxis extends Axis
 
         boolean drawUpOrRight = false;
         boolean drawDownOrLeft = false;
-        if (this.positiveArrowVisible) {
+        if (this.valueAxisProduct.getPositiveArrowVisible()) {
             if (this.inverted) {
                 drawDownOrLeft = true;
             }
@@ -583,7 +571,7 @@ public abstract class ValueAxis extends Axis
                 drawUpOrRight = true;
             }
         }
-        if (this.negativeArrowVisible) {
+        if (this.valueAxisProduct.getNegativeArrowVisible()) {
             if (this.inverted) {
                 drawUpOrRight = true;
             } else {
@@ -1695,10 +1683,10 @@ public abstract class ValueAxis extends Axis
             return false;
         }
         ValueAxis that = (ValueAxis) obj;
-        if (this.positiveArrowVisible != that.positiveArrowVisible) {
+        if (this.valueAxisProduct.getPositiveArrowVisible() != that.valueAxisProduct.getPositiveArrowVisible()) {
             return false;
         }
-        if (this.negativeArrowVisible != that.negativeArrowVisible) {
+        if (this.valueAxisProduct.getNegativeArrowVisible() != that.valueAxisProduct.getNegativeArrowVisible()) {
             return false;
         }
         if (this.inverted != that.inverted) {
@@ -1753,6 +1741,7 @@ public abstract class ValueAxis extends Axis
     @Override
     public Object clone() throws CloneNotSupportedException {
         ValueAxis clone = (ValueAxis) super.clone();
+		clone.valueAxisProduct = (ValueAxisProduct) this.valueAxisProduct.clone();
         return clone;
     }
 
