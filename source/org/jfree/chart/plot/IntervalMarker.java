@@ -63,14 +63,10 @@ import org.jfree.util.ObjectUtilities;
  */
 public class IntervalMarker extends Marker implements Cloneable, Serializable {
 
-    /** For serialization. */
+    private IntervalMarkerUtility intervalMarkerUtility = new IntervalMarkerUtility();
+
+	/** For serialization. */
     private static final long serialVersionUID = -1762344775267627916L;
-
-    /** The start value. */
-    private double startValue;
-
-    /** The end value. */
-    private double endValue;
 
     /** The gradient paint transformer (optional). */
     private GradientPaintTransformer gradientPaintTransformer;
@@ -117,8 +113,8 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
                           float alpha) {
 
         super(paint, stroke, outlinePaint, outlineStroke, alpha);
-        this.startValue = start;
-        this.endValue = end;
+        intervalMarkerUtility.setStartValue2(start);
+        intervalMarkerUtility.setEndValue2(end);
         this.gradientPaintTransformer = null;
         setLabelOffsetType(LengthAdjustmentType.CONTRACT);
 
@@ -130,7 +126,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
      * @return The start value.
      */
     public double getStartValue() {
-        return this.startValue;
+        return this.intervalMarkerUtility.getStartValue();
     }
 
     /**
@@ -142,8 +138,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
      * @since 1.0.3
      */
     public void setStartValue(double value) {
-        this.startValue = value;
-        notifyListeners(new MarkerChangeEvent(this));
+        intervalMarkerUtility.setStartValue(value, this);
     }
 
     /**
@@ -152,7 +147,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
      * @return The end value.
      */
     public double getEndValue() {
-        return this.endValue;
+        return this.intervalMarkerUtility.getEndValue();
     }
 
     /**
@@ -164,8 +159,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
      * @since 1.0.3
      */
     public void setEndValue(double value) {
-        this.endValue = value;
-        notifyListeners(new MarkerChangeEvent(this));
+        intervalMarkerUtility.setEndValue(value, this);
     }
 
     /**
@@ -208,10 +202,10 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
             return false;
         }
         IntervalMarker that = (IntervalMarker) obj;
-        if (this.startValue != that.startValue) {
+        if (this.intervalMarkerUtility.getStartValue() != that.intervalMarkerUtility.getStartValue()) {
             return false;
         }
-        if (this.endValue != that.endValue) {
+        if (this.intervalMarkerUtility.getEndValue() != that.intervalMarkerUtility.getEndValue()) {
             return false;
         }
         if (!ObjectUtilities.equal(this.gradientPaintTransformer,
